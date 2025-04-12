@@ -14,7 +14,7 @@ const changeTab = (targetName: string) => {
 
 <template>
   <div class="center">
-    <el-tabs class="h-tabs" v-model="tabsStore.currentTab" type="card" closable @tab-remove="removeTab" @tab-change="changeTab">
+    <el-tabs v-model="tabsStore.currentTab" type="card" closable @tab-remove="removeTab" @tab-change="changeTab">
       <el-tab-pane v-for="item in tabsStore.getCenterTabs()" :key="item.name" :label="item.title" :name="item.name">
       </el-tab-pane>
     </el-tabs>
