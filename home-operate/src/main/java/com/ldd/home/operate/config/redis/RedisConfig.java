@@ -43,7 +43,7 @@ public class RedisConfig {
     @Bean
     public RedissonClient getRedissonClient(){
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://"+redisHost+":"+redisPort).setPassword(redisPassword);
+        config.useSingleServer().setAddress("redis://"+redisHost+":"+redisPort);
         return Redisson.create(config);
     }
 
