@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.SysDictMapper">
+
+    <select id="getDictTypeList"  resultType="com.ldd.home.operate.entity.SysDict">
+        SELECT dict_type, dict_name, sort, status
+        FROM sys_dict a
+        <where>
+            <if test="req.mhcx!=null and req.mhcx!=''">
+                and (a.dict_type like concat ('%',#{req.mhcx},'%')
+                    or a.dict_name like concat ('%',#{req.mhcx},'%')
+                )
+            </if>
+        </where>
+        order by status desc
+    </select>
+</mapper>

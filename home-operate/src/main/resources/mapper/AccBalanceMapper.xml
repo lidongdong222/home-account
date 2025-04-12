@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.AccBalanceMapper">
+
+    <insert id="insertBatch">
+        insert into acc_balance(period_type, period, income, expenditure, balance,begin_balance,end_balance)
+        values
+        <foreach collection="list" separator="," item="item" >
+            (#{item.periodType}, #{item.period}, #{item.income}, #{item.expenditure}, #{item.balance},#{item.beginBalance},#{item.endBalance})
+        </foreach>
+    </insert>
+    <delete id="deleteByPeriodType">
+        delete from acc_balance
+        where period_type = #{periodType}
+    </delete>
+</mapper>

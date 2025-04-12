@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.SubInfoMapper">
+    <sql id="getSubInfo">
+        SELECT sub_id, sub_type, sub_code, sub_name, sub_code1, sub_name1, sub_code2, sub_name2,
+        sub_code3, sub_name3, sub_code4, sub_name4, sub_code5, sub_name5, sub_code6,
+        sub_name6, sub_code7, sub_name7, sub_code8, sub_name8, sub_code9, sub_name9,
+        sub_code10, sub_name10, sub_code11, sub_name11, sub_code12, sub_name12,
+        sub_code13, sub_name13, sub_code14, sub_name14, sub_code15, sub_name15,
+        sub_code16, sub_name16, sub_code17, sub_name17, sub_code18, sub_name18,
+        sub_code19, sub_name19, sub_code20, sub_name20, sort, sub_desc, create_date,
+        create_user, update_date, update_user, status
+        FROM sub_info a
+        <where>
+            a.status = '1'
+            <if test="req.subType!=null and req.subType!=''">
+                and a.sub_type = #{req.subType}
+            </if>
+            <if test="req.subCode!=null and req.subCode!=''">
+                and a.sub_code like concat('%',#{req.subCode},'%')
+            </if>
+            <if test="req.subName!=null and req.subName!=''">
+                and a.sub_name like concat('%',#{req.subName},'%')
+            </if>
+            <if test="req.subCode1!=null and req.subCode1!=''">
+                and a.sub_code1 like concat('%',#{req.subCode1},'%')
+            </if>
+            <if test="req.subName1!=null and req.subName1!=''">
+                and a.sub_name1 like concat('%',#{req.subName1},'%')
+            </if>
+            <if test="req.subCode2!=null and req.subCode2!=''">
+                and a.sub_code2 like concat('%',#{req.subCode2},'%')
+            </if>
+            <if test="req.subName2!=null and req.subName2!=''">
+                and a.sub_name2 like concat('%',#{req.subName2},'%')
+            </if>
+            <if test="req.startCreateDate!=null and req.startCreateDate!=''">
+                and str_to_date(a.create_date,'%Y-%m-%d %H:%i:%s') >= #{req.startCreateDate}
+            </if>
+            <if test="req.endCreateDate!=null and req.endCreateDate!=''">
+                and str_to_date(a.create_date,'%Y-%m-%d %H:%i:%s') &lt;= #{req.endCreateDate}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getSubInfoPage" resultType="com.ldd.home.operate.entity.SubInfo">
+        <include refid="getSubInfo"></include>
+    </select>
+
+    <select id="getSubInfoList" resultType="com.ldd.home.operate.entity.SubInfo">
+        <include refid="getSubInfo"></include>
+        limit #{start},#{end}
+    </select>
+</mapper>

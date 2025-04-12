@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.PrivateAccInfoTmpMapper">
+
+    <insert id="insertBatch">
+        insert into private_acc_info_tmp
+        (tmp_id, imp_id, res_id, sub_code, amount, acc_year, acc_month, acc_date,
+        digest, exchange_desc, source_desc, import_date, import_user,deal_status)
+        values
+        <foreach collection="list" item="item" separator="," >
+            (#{item.tmpId},#{item.impId},#{item.resId},#{item.subCode},#{item.amount},#{item.accYear},#{item.accMonth},#{item.accDate},
+            #{item.digest},#{item.exchangeDesc},#{item.sourceDesc},#{item.importDate},#{item.importUser},0)
+        </foreach>
+    </insert>
+
+    <update id="updateBatch">
+        <foreach collection="list" item="item" index="index" separator=";">
+            update private_acc_info_tmp
+            <set>
+                deal_status = #{item.dealStatus},
+                <if test="item.dealMsg!=null and item.dealMsg!=''">
+                    deal_msg = #{item.dealMsg},
+                </if>
+            </set>
+            where tmp_id = #{item.tmpId}
+        </foreach>
+    </update>
+    <select id="selectResolveCount" resultType="com.ldd.home.operate.common.entity.ResolveCount">
+        select count(1) totalCount,
+            count(case when deal_status = 1 then 1 else null end ) successCount,
+            count(case when deal_status = 2 then 2 else null end ) failCount
+        from private_acc_info_tmp
+        where imp_id = #{impId}
+    </select>
+</mapper>

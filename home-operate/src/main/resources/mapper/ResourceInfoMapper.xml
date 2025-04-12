@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.ResourceInfoMapper">
+
+    <insert id="insertObtainId" parameterType="com.ldd.home.operate.entity.ResourceInfo" useGeneratedKeys="true" keyColumn="res_id" keyProperty="resId">
+        insert into home.resource_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="resStoreType !=null">
+                res_store_type,
+            </if>
+            <if test="resName !=null and resName != ''">
+                res_name,
+            </if>
+            <if test="resUniqueName !=null and resUniqueName != ''">
+                res_unique_name,
+            </if>
+            <if test="resSize !=null ">
+                res_size,
+            </if>
+            <if test="uploadTime !=null">
+                upload_time,
+            </if>
+            <if test="resInnerUrl !=null and resInnerUrl != ''">
+                res_inner_url,
+            </if>
+            <if test="resInternetUrl !=null and resInternetUrl != ''">
+                res_internet_url,
+            </if>
+            <if test="resServerIp !=null and resServerIp != ''">
+                res_server_ip,
+            </if>
+            <if test="resServerPath !=null and resServerPath != ''">
+                res_server_path,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="resStoreType !=null">
+                #{resStoreType},
+            </if>
+            <if test="resName !=null and resName != ''">
+                #{resName},
+            </if>
+            <if test="resUniqueName !=null and resUniqueName != ''">
+                #{resUniqueName},
+            </if>
+            <if test="resSize !=null ">
+                #{resSize},
+            </if>
+            <if test="uploadTime !=null">
+                #{uploadTime},
+            </if>
+            <if test="resInnerUrl !=null and resInnerUrl != ''">
+                #{resInnerUrl},
+            </if>
+            <if test="resInternetUrl !=null and resInternetUrl != ''">
+                #{resInternetUrl},
+            </if>
+            <if test="resServerIp !=null and resServerIp != ''">
+                #{resServerIp},
+            </if>
+            <if test="resServerPath !=null and resServerPath != ''">
+                #{resServerPath},
+            </if>
+        </trim>
+    </insert>
+</mapper>

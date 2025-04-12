@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.SysUserMapper">
+    <insert id="insertObtainId" useGeneratedKeys="true" keyColumn="user_id" keyProperty="userId">
+        INSERT INTO home.sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="usercode!=null and usercode!=''">
+                usercode,
+            </if>
+            <if test="username!=null and username!=''">
+                username,
+            </if>
+            <if test="phone!=null and phone!=''">
+                phone,
+            </if>
+            <if test="salt!=null and salt!=''">
+                salt,
+            </if>
+            <if test="password!=null and password!=''">
+                password,
+            </if>
+            <if test="remark!=null and remark!=''">
+                remark,
+            </if>
+            <if test="status!=null and status!=''">
+                status,
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                create_date,
+            </if>
+            <if test="createUser!=null and createUser!=''">
+                create_user,
+            </if>
+            <if test="updateDate!=null and updateDate!=''">
+                update_date,
+            </if>
+            <if test="updateUser!=null and updateUser!=''">
+                update_user,
+            </if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="usercode!=null and usercode!=''">
+                #{usercode},
+            </if>
+            <if test="username!=null and username!=''">
+                #{username},
+            </if>
+            <if test="phone!=null and phone!=''">
+                #{phone},
+            </if>
+            <if test="salt!=null and salt!=''">
+                #{salt},
+            </if>
+            <if test="password!=null and password!=''">
+                #{password},
+            </if>
+            <if test="remark!=null and remark!=''">
+                #{remark},
+            </if>
+            <if test="status!=null and status!=''">
+                status,
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                #{createDate},
+            </if>
+            <if test="createUser!=null and createUser!=''">
+                #{createUser},
+            </if>
+            <if test="updateDate!=null and updateDate!=''">
+                #{updateDate},
+            </if>
+            <if test="updateUser!=null and updateUser!=''">
+                #{updateUser},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="queryUserList" resultType="com.ldd.home.operate.entity.SysUser">
+        SELECT a.user_id, a.usercode, a.username, a.phone, a.remark, a.create_date, a.create_user, a.update_date,
+        a.update_user,t1.viewRoleIds,t1.viewRoleNames,a.status
+        FROM sys_user a
+        left join (
+        select b1.user_id,GROUP_CONCAT(a1.role_id SEPARATOR ',') AS viewRoleIds,
+        GROUP_CONCAT(a1.role_name SEPARATOR ',') AS viewRoleNames
+        from sys_role a1
+        join sys_user_role b1 on a1.role_id = b1.role_id
+        where a1.status = '1'
+        group by b1.user_id
+        )t1 on a.user_id = t1.user_id
+        where a.user_id !=1
+        <if test="mhcx!=null and mhcx!=''">
+            and (a.usercode like concat('%',#{mhcx},'%') or a.username like concat('%',#{mhcx},'%'))
+        </if>
+    </select>
+
+    <select id="selectByUsercode" resultType="com.ldd.home.operate.entity.SysUser">
+        SELECT a.user_id, a.usercode, a.username, a.phone, a.remark, a.create_date, a.create_user, a.update_date,
+        a.update_user,t1.viewRoleIds,t1.viewRoleNames,a.status,a.signature,a.password,a.salt
+        FROM sys_user a
+        left join (
+        select b1.user_id,GROUP_CONCAT(a1.role_id SEPARATOR ',') AS viewRoleIds,
+        GROUP_CONCAT(a1.role_name SEPARATOR ',') AS viewRoleNames
+        from sys_role a1
+        join sys_user_role b1 on a1.role_id = b1.role_id
+        where a1.status = '1'
+        group by b1.user_id
+        )t1 on a.user_id = t1.user_id
+        where a.usercode = #{usercode}
+    </select>
+</mapper>

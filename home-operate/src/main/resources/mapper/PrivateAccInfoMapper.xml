@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.PrivateAccInfoMapper">
+
+    <select id="getAccountList" resultType="com.ldd.home.operate.entity.PrivateAccInfo">
+        select a.acc_id,a.sub_code,a.amount,a.acc_year,a.acc_month,date_format(a.acc_date,'%Y-%m-%d') acc_date
+            ,a.digest,a.exchange_desc,a.source_desc,b.sub_name
+        from private_acc_info a
+        left join private_sub_info b on a.sub_code = b.sub_code and b.status = '1'
+        <where>
+            a.status = '1'
+            <if test="req.subCode!=null and req.subCode!=''">
+                and a.sub_code like concat(#{req.subCode},'%')
+            </if>
+            <if test="req.startAmt!=null">
+                and a.amount &gt;= #{req.startAmt}
+            </if>
+            <if test="req.endAmt!=null">
+                and a.amount &lt;= #{req.endAmt}
+            </if>
+            <if test="req.startDate!=null and req.startDate!=''">
+                and a.acc_date &gt;= #{req.startDate}
+            </if>
+            <if test="req.endDate!=null and req.endDate!=''">
+                and a.acc_date &lt;= #{req.endDate}
+            </if>
+            <if test="req.mhcx!=null and req.mhcx!=''">
+                and (a.digest like concat('%',#{req.mhcx},'%')
+                    or a.exchange_desc like concat('%',#{req.mhcx},'%')
+                    or a.source_desc like concat('%',#{req.mhcx},'%'))
+            </if>
+        </where>
+        order by a.acc_date desc
+    </select>
+
+    <select id="getCurrentYearGather" resultType="com.ldd.home.operate.entity.tmp.AccountGather">
+        select
+            #{year} date,
+            zc currentYearConsumption,
+            sr currentYearIncome,
+            yhck+sr+zc totalBalance,
+            sr+zc currentYearNetDeposit
+        from(
+            select sum(case when a.sub_code like 'ZC%' then a.amount*-1 else 0 end) zc,
+            sum(case when a.sub_code like 'SR%' then a.amount*-1 else 0 end) sr,
+            sum(case when a.sub_code like 'YHCK%' then a.amount else 0 end) yhck
+            from  private_acc_info a
+            where a.status = 1 and a.acc_year = #{year}
+        ) t1
+    </select>
+    <select id="getStatisticsByMonths" resultType="com.ldd.home.operate.entity.PrivateAccInfo" >
+        select a.acc_year,a.acc_month,sum(a.amount) amount
+        from private_acc_info a
+        where a.status = 1 and a.sub_code like 'ZC%' and (a.acc_year*100+a.acc_month) in (
+            <foreach collection="yearMonths" item="item" separator=",">
+                #{item}
+            </foreach>
+        )
+        group by a.acc_year,a.acc_month
+    </select>
+    <select id="getExpenditureByYearMonth" resultType="com.ldd.home.operate.entity.PrivateAccInfo">
+        select a.sub_code,max(b.sub_name) sub_name,sum(a.amount) amount
+        from private_acc_info a
+        left join private_sub_info b on a.sub_code = b.sub_code
+        where a.status = 1 and a.acc_year = #{year} and a.acc_month = #{month} and a.sub_code like 'ZC%'
+        group by a.sub_code
+    </select>
+
+    <insert id="insertBatch">
+        insert into private_acc_info
+        (sub_code, amount, acc_year, acc_month, acc_date,
+        digest, exchange_desc, source_desc,status,tmp_id)
+        values
+        <foreach collection="list" item="item" separator="," >
+            (#{item.subCode},#{item.amount},#{item.accYear},#{item.accMonth},#{item.accDate},
+            #{item.digest},#{item.exchangeDesc},#{item.sourceDesc},'1',#{item.tmpId})
+        </foreach>
+    </insert>
+</mapper>

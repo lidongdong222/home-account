@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.ImpInfoMapper">
+
+    <insert id="insertObtainId" useGeneratedKeys="true" keyProperty="impId" keyColumn="imp_id">
+        insert into home.imp_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="resId!=null ">
+                res_id,
+            </if>
+            <if test="menuId!=null ">
+                menu_id,
+            </if>
+            <if test="impTime!=null ">
+                imp_time,
+            </if>
+            <if test="impTargetTable!=null and impTargetTable!=''">
+                imp_target_table,
+            </if>
+            <if test="impTmpTable!=null and impTmpTable!='' ">
+                imp_tmp_table,
+            </if>
+            <if test="impTotal!=null ">
+                imp_total,
+            </if>
+            <if test="impSucc!=null ">
+                imp_succ,
+            </if>
+            <if test="impFail!=null ">
+                imp_fail,
+            </if>
+            <if test="impTimeComsum!=null ">
+                imp_time_comsum,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="resId!=null ">
+                #{resId},
+            </if>
+            <if test="menuId!=null ">
+                #{menuId},
+            </if>
+            <if test="impTime!=null ">
+                #{impTime},
+            </if>
+            <if test="impTargetTable!=null and impTargetTable!=''">
+                #{impTargetTable},
+            </if>
+            <if test="impTmpTable!=null and impTmpTable!='' ">
+                #{impTmpTable},
+            </if>
+            <if test="impTotal!=null ">
+                #{impTotal},
+            </if>
+            <if test="impSucc!=null ">
+                #{impSucc},
+            </if>
+            <if test="impFail!=null ">
+                #{impFail},
+            </if>
+            <if test="impTimeComsum!=null ">
+                #{impTimeComsum},
+            </if>
+        </trim>
+    </insert>
+
+</mapper>

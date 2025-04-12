@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.SysRoleMapper">
+
+    <select id="queryRoleList" resultType="com.ldd.home.operate.entity.SysRole">
+        SELECT role_id, role_code, role_name, role_desc, status
+        FROM home.sys_role
+        WHERE role_id != 1
+        <if test="mhcx!=null and mhcx!=''">
+            and ( role_code like concat('%',#{mhcx},'%') or role_name like concat('%',#{mhcx},'%'))
+        </if>
+        order by status desc,role_id
+    </select>
+</mapper>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.AccInfoMapper">
+    <insert id="insertBatch" >
+        INSERT INTO home.acc_info
+        (acc_id, sub_id, imp_id, amount, acc_period, acc_date, digest, payment_type, create_date, create_user, update_date,
+        update_user, status, tmp_id, wx_tran_order)
+        VALUES
+        <foreach collection="accInfos" item="item" separator=",">
+            (#{item.accId}, #{item.subId},#{item.impId}, #{item.amount}, #{item.accPeriod}, #{item.accDate}, #{item.digest}, #{item.paymentType},
+            #{item.createDate}, #{item.createUser}, #{item.updateDate},
+            #{item.updateUser}, #{item.status}, #{item.tmpId}, #{item.wxTranOrder})
+        </foreach>
+    </insert>
+
+    <sql id="getAccountList">
+        select a.acc_id,a.sub_id,b.sub_type,b.sub_code,b.sub_name,a.amount,date_format(a.acc_date,'%Y-%m-%d') acc_date,
+        a.acc_period,a.digest,a.payment_type,date_format(a.create_date,'%Y-%m-%d %H:%i:%s') create_date,c.username create_user_name
+        ,d.merchant,d.goods
+        from acc_info a
+        left join sub_info b on a.sub_id = b.sub_id and b.status = '1'
+        left join sys_user c on a.create_user = c.user_id
+        left join wx_bill d on a.imp_id = d.imp_id and a.wx_tran_order = d.tran_order
+        <where>
+            a.status = '1'
+            <if test="req.startPeriod!=null and req.startPeriod!=''">
+                and a.acc_period >= #{req.startPeriod}
+            </if>
+            <if test="req.endPeriod!=null and req.endPeriod!=''">
+                and a.acc_period &lt;= #{req.endPeriod}
+            </if>
+            <if test="req.subType!=null and req.subType!=''">
+                and b.sub_type = #{req.subType}
+            </if>
+            <if test="req.subCode!=null and req.subCode!=''">
+                and b.sub_code like concat('%',#{req.subCode},'%')
+            </if>
+            <if test="req.subName!=null and req.subName!=''">
+                and b.sub_name like concat('%',#{req.subName},'%')
+            </if>
+            <if test="req.startAccDate!=null and req.startAccDate!=''">
+                and str_to_date(a.acc_date,'%Y-%m-%d') >= #{req.startAccDate}
+            </if>
+            <if test="req.endAccDate!=null and req.endAccDate!=''">
+                and str_to_date(a.acc_date,'%Y-%m-%d') &lt;= #{req.endAccDate}
+            </if>
+            <if test="req.digest!=null and req.digest!=''">
+                and a.digest like concat('%',#{req.digest},'%')
+            </if>
+            <if test="req.paymentType!=null and req.paymentType!=''">
+                and a.payment_type = #{req.paymentType}
+            </if>
+            <if test="req.startCreateDate!=null and req.startCreateDate!=''">
+                and str_to_date(a.create_date,'%Y-%m-%d %H:%i:%s') >= #{req.startCreateDate}
+            </if>
+            <if test="req.endCreateDate!=null and req.endCreateDate!=''">
+                and str_to_date(a.create_date,'%Y-%m-%d %H:%i:%s') &lt;= #{req.endCreateDate}
+            </if>
+            <if test="req.startAmount!=null and req.startAmount!=''">
+                and a.amount >= #{req.startAmount}
+            </if>
+            <if test="req.endAmount!=null and req.endAmount!=''">
+                and a.amount &lt;= #{req.endAmount}
+            </if>
+            <if test="req.createUser!=null and req.createUser!=''">
+                and c.username like concat('%',#{req.createUser},'%')
+            </if>
+            <if test="req.createUser!=null and req.createUser!=''">
+                and c.username like concat('%',#{req.createUser},'%')
+            </if>
+        </where>
+        order by a.acc_date desc,a.create_date desc
+    </sql>
+
+    <select id="getAccountPage" resultType="com.ldd.home.operate.entity.AccInfo">
+        <include refid="getAccountList"></include>
+    </select>
+
+    <select id="getAccountList" resultType="com.ldd.home.operate.entity.AccInfo">
+        <include refid="getAccountList"></include>
+        limit #{start},#{end}
+    </select>
+
+    <select id="getAccountSummary" resultType="java.util.Map">
+        select sum(a.amount) amount
+        from acc_info a
+        left join sub_info b on a.sub_id = b.sub_id and b.status = '1'
+        left join sys_user c on a.create_user = c.user_id
+        <where>
+            a.status = '1'
+            <if test="req.startPeriod!=null and req.startPeriod!=''">
+                and a.acc_period >= #{req.startPeriod}
+            </if>
+            <if test="req.endPeriod!=null and req.endPeriod!=''">
+                and a.acc_period &lt;= #{req.endPeriod}
+            </if>
+            <if test="req.subType!=null and req.subType!=''">
+                and b.sub_type = #{req.subType}
+            </if>
+            <if test="req.subCode!=null and req.subCode!=''">
+                and b.sub_code like concat('%',#{req.subCode},'%')
+            </if>
+            <if test="req.subName!=null and req.subName!=''">
+                and b.sub_name like concat('%',#{req.subName},'%')
+            </if>
+            <if test="req.startAccDate!=null and req.startAccDate!=''">
+                and str_to_date(a.acc_date,'%Y-%m-%d') >= #{req.startAccDate}
+            </if>
+            <if test="req.endAccDate!=null and req.endAccDate!=''">
+                and str_to_date(a.acc_date,'%Y-%m-%d') &lt;= #{req.endAccDate}
+            </if>
+            <if test="req.digest!=null and req.digest!=''">
+                and a.digest like concat('%',#{req.digest},'%')
+            </if>
+            <if test="req.paymentType!=null and req.paymentType!=''">
+                and a.payment_type = #{req.paymentType}
+            </if>
+            <if test="req.startCreateDate!=null and req.startCreateDate!=''">
+                and str_to_date(a.create_date,'%Y-%m-%d %H:%i:%s') >= #{req.startCreateDate}
+            </if>
+            <if test="req.endCreateDate!=null and req.endCreateDate!=''">
+                and str_to_date(a.create_date,'%Y-%m-%d %H:%i:%s') &lt;= #{req.endCreateDate}
+            </if>
+            <if test="req.startAmount!=null and req.startAmount!=''">
+                and a.amount >= #{req.startAmount}
+            </if>
+            <if test="req.endAmount!=null and req.endAmount!=''">
+                and a.amount &lt;= #{req.endAmount}
+            </if>
+            <if test="req.createUser!=null and req.createUser!=''">
+                and c.username like concat('%',#{req.createUser},'%')
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getRepeat" resultType="com.ldd.home.operate.entity.AccInfo">
+        select a.acc_id,a.sub_id,b.sub_type,b.sub_code,b.sub_name,a.amount,date_format(a.acc_date,'%Y-%m-%d') acc_date,
+        a.acc_period,a.digest,a.payment_type,date_format(a.create_date,'%Y-%m-%d %H:%i:%s') create_date
+        from acc_info a
+        left join sub_info b on a.sub_id = b.sub_id
+        <where>
+            a.status = '1'
+            <if test="subId!=null and subId!=''">
+                and a.sub_id = #{subId}
+            </if>
+            <if test="amount!=null and amount!=''">
+                and a.amount = #{amount}
+            </if>
+            <if test="accDate!=null and accDate!=''">
+                and a.acc_date = #{accDate}
+            </if>
+        </where>
+        order by a.acc_date desc
+    </select>
+    <select id="getAccMonthSummaryInfo" resultType="com.ldd.home.operate.entity.AccBalance">
+        select  period_type,acc_period period,income,expenditure,income-expenditure balance
+        from(
+            select
+            '3' period_type,
+            a.acc_period,
+            sum(case when b.sub_type = '1' then a.amount else 0 end) income,
+            sum(case when b.sub_type = '2' then a.amount else 0 end) expenditure
+            from acc_info a
+            left join sub_info b on a.sub_id = b.sub_id
+            where a.acc_period like concat(#{acc_period},'%')
+            group by a.acc_period
+        ) t1
+        order by acc_period asc
+    </select>
+
+
+</mapper>

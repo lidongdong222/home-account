@@ -1,0 +1,97 @@
+:root{
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    width: 100%;
+    height: 100vh;
+}
+a:hover{
+    color: rgb(88, 88, 253);
+    text-decoration: underline;
+    cursor: pointer;
+}
+.h-standard{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.h-query {
+    margin-left: 10px;
+    font-size: 12px;
+    min-width: 1205px;
+    color: #606266;
+}
+.h-query-button{
+    float: inline-end;
+    margin-right: 20px;
+}
+.h-query-item{
+    display: inline-block;
+    margin-bottom: 3px;
+}
+.h-query-item label{
+    display: inline-block;
+    text-align: left;
+    width:80px;
+}
+.h-query-item-short label{
+    display: inline-block;
+    width:40px;
+}
+.h-operate{
+    border-top: 0.5px #e0e5ee solid;
+    padding: 3px;
+    padding-right: 20px;
+    text-align:right;
+}
+.el-table{
+    flex:1;
+}
+.h-table-hover:hover{
+    color: tomato;
+}
+.h-page{
+    margin-top: 6px;
+    text-align: right;
+}
+
+sub{
+    color: #666666;
+    text-indent: 3px;
+}
+.el-upload-list__item-info{
+    background-color: blanchedalmond !important;
+}
+.el-dialog__body{
+    padding-top:10px !important;
+    padding-bottom:10px !important;
+}
+.home-addition-prompt-aboriginal{
+    background-color:white;
+    transition: background-color 0.75s;
+}
+.home-addition-prompt{
+    background-color:red;
+    transition: background-color 0.75s;
+}
+.h-tip{
+    font-size: 12px;
+    color: rgb(121, 121, 121);
+}
+.h-statistics{
+    position: relative;
+    color: #606266;
+    margin: 12px;
+    text-align: center;
+}
+.h-statistics-operate{
+    display:inline;
+    position: absolute;
+    bottom:0px;
+    right: 0px;
+}
