@@ -14,7 +14,7 @@ const changeTab = (targetName: string) => {
 
 <template>
   <div class="center">
-    <el-tabs v-model="tabsStore.currentTab" type="card" closable @tab-remove="removeTab" @tab-change="changeTab">
+    <el-tabs class="h-tabs" v-model="tabsStore.currentTab" type="card" closable @tab-remove="removeTab" @tab-change="changeTab">
       <el-tab-pane v-for="item in tabsStore.getCenterTabs()" :key="item.name" :label="item.title" :name="item.name">
       </el-tab-pane>
     </el-tabs>
@@ -40,16 +40,16 @@ const changeTab = (targetName: string) => {
   height: calc(100% - 35px);
 }
 
-.el-tabs {
-  height: 33px;
-}
+// .el-tabs__nav-scroll{
 
-::v-deep(.el-tabs__header) {
+// }
+::v-deep(.el-tabs__header)  {
   height: 30px;
+  margin-bottom: 2px;
+  font-size: 10px;
+  overflow: hidden;
 }
-
-::v-deep(.el-tabs__item) {
-  height: 30px;
+::v-deep(.el-tabs__item)  {
   font-size: 12px;
 }
 </style>
