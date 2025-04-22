@@ -381,7 +381,7 @@ public class AccInfoServiceImpl implements IAccInfoService {
         File f = null;
         BufferedReader bufferedReader = null;
         try{
-            int beginRow = 17;
+            int beginRow = 0;
             List<WxBill> wxBillList = new ArrayList();
             f = resourceService.getFile(resId,
                     configService.getConfigValue("SYS_TEMP_FILE_PATH")+ File.separator+
@@ -392,7 +392,8 @@ public class AccInfoServiceImpl implements IAccInfoService {
             while(true){
                 String s = FastCsvUtils.csvReadLine(bufferedReader);
                 if(s==null) break;
-                if(i>beginRow) wxBillList.add(convertWxBill(impId,s.split(",")));
+                if(s.startsWith("交易时间,")){beginRow=i;}
+                if(beginRow!=0 && i>beginRow) wxBillList.add(convertWxBill(impId,s.split(",")));
                 i++;
             }
 //            wxBillMapper.delete(
