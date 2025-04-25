@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldd.home.operate.mapper.WxBillMatchSubjectRuleMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO wx_bill_match_subject_rule
+        (wbmsr_id, user_id, sub_type, wx_data_item, match_type, match_content, match_sub_id,
+        create_user, update_date, update_user)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.wbmsrId},#{item.userId}, #{item.subType}, #{item.wxDataItem}, #{item.matchType},
+            #{item.matchContent}, #{item.matchSubId},#{item.createUser}, #{item.updateDate}, #{item.updateUser})
+        </foreach>
+    </insert>
+</mapper>

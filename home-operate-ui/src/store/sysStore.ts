@@ -90,6 +90,13 @@ export const useTabsStore = defineStore("tabs", () => {
     }
     return centerTabs.value;
   }
+
+  function hasActiveTab(name:string){
+    for (const key in centerTabs.value) {
+      if(centerTabs.value[key].name==name) return true;
+    }
+    return false;
+  }
   return { currentTab, getCenterTabs, addTab, delTab,changeTab }
 })
 

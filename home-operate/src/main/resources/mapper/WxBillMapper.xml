@@ -5,11 +5,11 @@
     <!--批量插入-->
     <insert id="insertBatch" useGeneratedKeys="true" keyColumn="wb_id" keyProperty="wbId">
         INSERT INTO home.wx_bill
-        (imp_id, tran_date, tran_type, merchant, goods, acc_type, amount, pay_type, wx_status,
+        (imp_id, tran_date, tran_type, merchant, goods, sub_type, amount, pay_type, wx_status,
         tran_order, merchant_order, remark, create_date, create_user, update_date, update_user)
         VALUES
         <foreach collection="wxBillList" item="item" separator="," >
-            (#{item.impId}, #{item.tranDate}, #{item.tranType}, #{item.merchant}, #{item.goods}, #{item.accType}, #{item.amount}, #{item.payType}, #{item.wxStatus},
+            (#{item.impId}, #{item.tranDate}, #{item.tranType}, #{item.merchant}, #{item.goods}, #{item.subType}, #{item.amount}, #{item.payType}, #{item.wxStatus},
             #{item.tranOrder}, #{item.merchantOrder}, #{item.remark}, #{item.createDate}, #{item.createUser}, #{item.updateDate}, #{item.updateUser})
         </foreach>
     </insert>

@@ -1,6 +1,7 @@
 package com.ldd.home.operate.controller;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.ldd.home.operate.common.constant.ErrorMsgConst;
 import com.ldd.home.operate.common.entity.Result;
@@ -12,6 +13,8 @@ import com.ldd.home.operate.common.utils.ExceptionUtil;
 import com.ldd.home.operate.common.utils.StrUtil;
 import com.ldd.home.operate.entity.AccInfo;
 import com.ldd.home.operate.entity.SubInfo;
+import com.ldd.home.operate.entity.WxBill;
+import com.ldd.home.operate.entity.WxBillMatchSubjectRule;
 import com.ldd.home.operate.entity.req.AccInfoReq;
 import com.ldd.home.operate.entity.req.IdReq;
 import com.ldd.home.operate.entity.req.SubInfoReq;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -111,7 +115,6 @@ public class AccInfoController {
 
     @PostMapping("/delAccount")
     public Result delAccount(@RequestBody @Validated IdReq req) throws BusinessException {
-        log.info("delSubinfo 入参：{}",req);
         log.info("{}.delAccount请求入参：{}",getClass().getName(), JSON.toJSONString(req));
         Result result =  accInfoService.delAccount(req.getId());
         log.info("{}.delAccount请求出参：{}",getClass().getName(), JSON.toJSONString(result));
@@ -124,7 +127,6 @@ public class AccInfoController {
     @PostMapping("/importWxBill")
     public Result importWxBill(@RequestParam("file")MultipartFile file, @RequestParam Map params) throws Exception {
         log.info("importWxBill 入参：MultipartFile:{},params{}",file.getOriginalFilename(),params);
-        log.info("importWxBill 请求入参：{}", JSON.toJSONString(params));
         Result result =  accInfoService.importWxBill(file,params);
         log.info("importWxBill 请求出参：{}", JSON.toJSONString(result));
         return result;
@@ -135,7 +137,6 @@ public class AccInfoController {
      */
     @PostMapping("/importWxBillData")
     public Result importWxBillData(@RequestBody Map params) throws Exception {
-        log.info("importWxBillData 入参：params {}",params);
         log.info("importWxBillData 请求入参：{}", JSON.toJSONString(params));
         List<Map> wxBillList = (List) params.get("wxBillList");
 
@@ -169,6 +170,56 @@ public class AccInfoController {
             }
             log.info("exportAccountList 导出异常。");
         }
+    }
+
+    @PostMapping("/addWxMatchRule")
+    public Result addWxMatchRule(@RequestBody JSONObject params) throws BusinessException {
+        log.info("{}.addWxMatchRule 请求入参：{}",getClass().getName(), JSON.toJSONString(params));
+        List<WxBillMatchSubjectRule> mySubMatchRuleList = checkParamsAndTransObj(params.getJSONArray("wxMatchRuleList"));
+        Result result =  accInfoService.addWxMatchRule(mySubMatchRuleList);
+        log.info("{}.addWxMatchRule 请求出参：{}",getClass().getName(), result);
+        return result;
+    }
+
+    @PostMapping("/getWxMatchRuleList")
+    public Result getWxMatchRuleList() throws BusinessException {
+        log.info("{}.getWxMatchRuleList 请求入参。",getClass().getName());
+        Result result =  accInfoService.getWxMatchRuleList();
+        log.info("{}.getWxMatchRuleList 请求出参：{}",getClass().getName(), result);
+        return result;
+    }
+
+    //把请求参数转换为实体类，校验请求数据
+    private List<WxBillMatchSubjectRule> checkParamsAndTransObj(JSONArray arr) throws BusinessException {
+        List<WxBillMatchSubjectRule> list  = new ArrayList<>();
+        for (int i = 0; i < arr.size(); i++) {
+            WxBillMatchSubjectRule rule = JSONObject.parseObject(arr.getJSONObject(i).toString(),WxBillMatchSubjectRule.class);
+            if(rule==null
+                ||StrUtil.isEmpty(rule.getSubType())
+                ||StrUtil.isEmpty(rule.getMatchType())
+                ||StrUtil.isEmpty(rule.getMatchContent())
+                ||StrUtil.isEmpty(rule.getMatchSubId())
+                ||StrUtil.isEmpty(rule.getWxDataItem())
+                ||!StrUtil.lengthBetween(rule.getSubType(),0,2)
+                ||!StrUtil.lengthBetween(rule.getMatchType(),0,10)
+                ||!StrUtil.lengthBetween(rule.getMatchContent(),0,100)
+                ||!StrUtil.lengthBetween(rule.getMatchSubId().toString(),0,20)
+                ||!StrUtil.lengthBetween(rule.getWxDataItem(),0,20)
+            ){
+                throw new BusinessException(ErrorMsgConst.PARAMS_DELETION_ERROR);
+            }
+            list.add(rule);
+        }
+        return list;
+    }
+
+    /**
+     * 使用规则快速匹配科目
+     */
+    @PostMapping("/matchSubjectByRule")
+    public Result matchSubjectByRule(@RequestBody JSONObject params){
+        List<WxBill> wxBills = params.getList("wxBillList",WxBill.class);
+        return accInfoService.matchSubjectByRule(wxBills);
     }
 
     @PostMapping("/subject/exporSubjectList")

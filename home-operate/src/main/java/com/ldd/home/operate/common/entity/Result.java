@@ -12,11 +12,11 @@ import java.util.List;
 @Data
 @Builder
 @ToString
-public class Result {
+public class Result<T> {
     String code;
     String msg;
     Long total;
-    List list;
+    List<T> list;
     Object data;
     public static Result success(String msg){
         return new Result(BaseConst.SUCCESS,msg,null,null,null);

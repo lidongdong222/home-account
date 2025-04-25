@@ -18,7 +18,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       host:'0.0.0.0',
       proxy: {
         '/prod-api': {
-          target: "http://localhost:8081",
+          target: "http://localhost:8080",
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp("^" +env.VITE_APP_BASE_API), '')
         }

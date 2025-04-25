@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-export const apiExportUrl="/account/exportAccountList";
+export const ApiExportUrl="/account/exportAccountList";
 export interface Account{
     accId?:number;
     accPeriod?:string;
@@ -34,6 +34,9 @@ export function  ApiImportWxBill(file:any,repParam:any):Promise<any>{
     });
   }
 export function  ApiImportWxBillData(params:any):Promise<any>{return request.post("/account/importWxBillData",params);}
+export function  ApiAddWxMatchRule(params:any):Promise<any>{return request.post("/account/addWxMatchRule",params);}
+export function  ApiGetWxMatchRule():Promise<any>{return request.post("/account/getWxMatchRuleList");}
+export function  ApiMatchSubjectByRule(params:any):Promise<any>{return request.post("/account/matchSubjectByRule",params);}
 
 
 export interface Subject{

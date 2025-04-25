@@ -239,7 +239,7 @@ function exportData(exportType: string) {
             <el-pagination :current-page="queryForm.pageNum" :page-size="queryForm.pageSize"
                 :page-sizes="Base.defaultPageSizeList" :background="true" layout=" ->, prev, pager, next,total,sizes"
                 :total="total" @size-change="(size: number) => queryForm.pageSize = size"
-                @current-change="(size: number) => queryForm.pageNum = size" small />
+                @current-change="(size: number) => queryForm.pageNum = size" />
         </div>
     </div>
 

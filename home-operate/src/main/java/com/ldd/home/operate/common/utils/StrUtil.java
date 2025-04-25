@@ -150,6 +150,17 @@ public class StrUtil {
     }
 
     /**
+     * 获取字符串长度
+     */
+    public static boolean lengthBetween(String o,int min,int max) {
+        long l = getStrLength(o);
+        if(l>=min && l<=max){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * trim
      */
     public static String trim(String s){

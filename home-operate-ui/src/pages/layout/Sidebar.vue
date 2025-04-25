@@ -1,19 +1,28 @@
 <script setup lang="ts">
 import HomeIcon from '@/components/HomeIcon.vue'
 import { useMenuStore, useTabsStore } from '@/store/sysStore'
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
 const menuStore = useMenuStore();
 const tabStore = useTabsStore();
 
+watch(() => route.path, (newValue) => {
+  locateMenu();
+})
 onMounted(() => {
   menuStore.reloadMenuList().then(() => {
-    menuStore.menuList.forEach(m => {
-      if (getActiveIndex(m)) return;
-    })
+    locateMenu();
   });
 })
-function menuItemClick(menu:any) {
-  tabStore.addTab(menu.menuName,menu.menuId,menu.router);
+function menuItemClick(menu: any) {
+  tabStore.addTab(menu.menuName, menu.menuId, menu.router);
+}
+
+const locateMenu=function(){
+  menuStore.menuList.forEach(m => {
+      if (getActiveIndex(m)) return;
+    })
 }
 function getActiveIndex(menu: any) {
   if (menu.children) {

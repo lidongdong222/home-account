@@ -1,5 +1,6 @@
 package com.ldd.home.operate.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -68,8 +69,8 @@ public class WxBill {
     /**
      * 收支类型
      */
-    @TableField("acc_type")
-    private String accType;
+    @TableField("sub_type")
+    private String subType;
 
     /**
      * 金额(元)
@@ -107,16 +108,16 @@ public class WxBill {
     @TableField("remark")
     private String remark;
 
-    @TableField("create_date")
-    private LocalDateTime createDate;
+    @TableField(value = "create_date",fill = FieldFill.INSERT)
+    private String createDate;
 
-    @TableField("create_user")
+    @TableField(value = "create_user",fill = FieldFill.INSERT)
     private String createUser;
 
-    @TableField("update_date")
-    private LocalDateTime updateDate;
+    @TableField(value = "update_date",fill = FieldFill.UPDATE)
+    private String updateDate;
 
-    @TableField("update_user")
+    @TableField(value = "update_user",fill = FieldFill.UPDATE)
     private String updateUser;
 
     @TableField(exist = false)

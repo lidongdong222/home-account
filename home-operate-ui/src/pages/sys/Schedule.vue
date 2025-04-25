@@ -201,7 +201,7 @@ function reset() {
             <el-pagination :current-page="queryForm.pageNum" :page-size="queryForm.pageSize"
                 :page-sizes="Base.defaultPageSizeList" :background="true" layout="->,prev, pager, next,total, sizes,"
                 :total="scheduleTotal" @size-change="(size: number) => queryForm.pageSize = size"
-                @current-change="(size: number) => queryForm.pageNum = size" small />
+                @current-change="(size: number) => queryForm.pageNum = size" />
         </div>
     </div>
     <el-dialog v-model="scheduleWinShow" :title="'账单' + (isEdit ? '修改' : '新增')" width="500" draggable

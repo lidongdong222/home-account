@@ -3,9 +3,7 @@ package com.ldd.home.operate.service;
 
 import com.ldd.home.operate.common.entity.Result;
 import com.ldd.home.operate.common.exception.BusinessException;
-import com.ldd.home.operate.entity.AccBalance;
-import com.ldd.home.operate.entity.AccInfo;
-import com.ldd.home.operate.entity.SubInfo;
+import com.ldd.home.operate.entity.*;
 import com.ldd.home.operate.entity.req.AccInfoReq;
 import com.ldd.home.operate.entity.req.IdReq;
 import com.ldd.home.operate.entity.req.SubInfoReq;
@@ -44,4 +42,10 @@ public interface IAccInfoService {
     void exportAccountList(AccInfoReq params, HttpServletResponse response) throws Exception;
 
     void exporSubjectList(SubInfoReq params, HttpServletResponse response) throws Exception;
+
+    Result addWxMatchRule(List<WxBillMatchSubjectRule> mySubMatchRuleList);
+
+    Result getWxMatchRuleList();
+
+    Result matchSubjectByRule(List<WxBill> wxBills);
 }

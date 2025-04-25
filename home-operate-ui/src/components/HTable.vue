@@ -50,7 +50,6 @@ function isdataRowSpan(headerItem: any, dataItem: any, index: number) {
     return true;
 }
 function routeMetadata(colInfo: any, rowInfo: any, dataIndex: number) {
-    console.log(dataIndex)
     if (colInfo.isMetadata == '1') {
         if (props.sheet?.leftHeaders.length > 0) {
             if(props.sheet?.leftHeaders[dataIndex].isMetadata=="1"){

@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.generator.config.*;
  * @author lanjerry
  * @since 3.5.3
  */
-public class BaseGeneratorTest {
+public class BaseGenerator {
 
 
 
@@ -27,7 +27,7 @@ public class BaseGeneratorTest {
      */
     protected static GlobalConfig.Builder globalConfig() {
         return new GlobalConfig.Builder()
-                .outputDir("F:\\home\\home-operate\\src\\main\\java")
+                .outputDir("G:\\home-account\\home-operate\\src\\main\\java")
                 .author("ldd");
     }
 

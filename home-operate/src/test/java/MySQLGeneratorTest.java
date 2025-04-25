@@ -8,17 +8,17 @@ import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
  * @author lanjerry
  * @since 3.5.3
  */
-public class MySQLGeneratorTest extends BaseGeneratorTest {
+public class MySQLGeneratorTest extends BaseGenerator {
 
     public static String[] TABLES = new String[]{
-            "wx_bill"
+            "wx_bill_match_subject_rule"
     };
 
     /**
      * 数据源配置
      */
     private static final DataSourceConfig DATA_SOURCE_CONFIG = new DataSourceConfig
-            .Builder("jdbc:mysql://localhost:3306/home?serverTimezone=Asia/Shanghai", "root", "abc888")
+            .Builder("jdbc:mysql://1.92.149.74:3000/home?serverTimezone=Asia/Shanghai", "root", "dev63.63.")
             .build();
 
     public static void main(String[] args) {

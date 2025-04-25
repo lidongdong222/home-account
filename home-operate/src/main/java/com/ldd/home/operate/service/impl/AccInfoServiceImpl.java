@@ -1,7 +1,9 @@
 package com.ldd.home.operate.service.impl;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ldd.home.operate.common.constant.ErrorMsgConst;
@@ -15,27 +17,15 @@ import com.ldd.home.operate.common.utils.HttpServletResponseUtil;
 import com.ldd.home.operate.common.utils.IdUtil;
 import com.ldd.home.operate.common.utils.StrUtil;
 import com.ldd.home.operate.config.redis.RedisLockConstant;
-import com.ldd.home.operate.entity.AccBalance;
-import com.ldd.home.operate.entity.AccInfo;
-import com.ldd.home.operate.entity.ImpInfo;
-import com.ldd.home.operate.entity.RepColumn;
-import com.ldd.home.operate.entity.RepInfo;
-import com.ldd.home.operate.entity.RepSheet;
-import com.ldd.home.operate.entity.SubInfo;
-import com.ldd.home.operate.entity.WxBill;
+import com.ldd.home.operate.config.security.v1.HomeContextHolderStrategy;
+import com.ldd.home.operate.entity.*;
 import com.ldd.home.operate.entity.req.AccInfoReq;
 import com.ldd.home.operate.entity.req.IdReq;
 import com.ldd.home.operate.entity.req.ReportReq;
 import com.ldd.home.operate.entity.req.ResourceMultipartFileBusiReq;
 import com.ldd.home.operate.entity.req.SubInfoReq;
 import com.ldd.home.operate.entity.resp.ResourceBusiResp;
-import com.ldd.home.operate.mapper.AccInfoMapper;
-import com.ldd.home.operate.mapper.ImpInfoMapper;
-import com.ldd.home.operate.mapper.RepColumnMapper;
-import com.ldd.home.operate.mapper.RepInfoMapper;
-import com.ldd.home.operate.mapper.RepSheetMapper;
-import com.ldd.home.operate.mapper.SubInfoMapper;
-import com.ldd.home.operate.mapper.WxBillMapper;
+import com.ldd.home.operate.mapper.*;
 import com.ldd.home.operate.service.IAccInfoService;
 import com.ldd.home.operate.service.IResourceService;
 import com.ldd.home.operate.service.ISysConfigService;
@@ -53,6 +43,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -62,6 +53,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -94,6 +86,8 @@ public class AccInfoServiceImpl implements IAccInfoService {
     RedissonClient redissonClient;
     @Autowired
     ImpInfoMapper impInfoMapper;
+    @Autowired
+    WxBillMatchSubjectRuleMapper wxBillMatchSubjectRuleMapper;
     @Autowired
     IResourceService resourceService;
     @Autowired
@@ -417,7 +411,7 @@ public class AccInfoServiceImpl implements IAccInfoService {
                 .tranType(handlerMark(StringUtils.strip(strs.length>=1?strs[1]:null)))
                 .merchant(handlerMark(StringUtils.strip(strs.length>=2?strs[2]:null)))
                 .goods(handlerMark(StringUtils.strip(strs.length>=3?strs[3]:null)))
-                .accType(handlerMark(StringUtils.strip(strs.length>=4?strs[4]:null)))
+                .subType(handlerMark(StringUtils.strip(strs.length>=4?strs[4]:null)))
                 .amount(handlerMark(StringUtils.strip(strs.length>=5?strs[5]:null)))
                 .payType(handlerMark(StringUtils.strip(strs.length>=6?strs[6]:null)))
                 .wxStatus(handlerMark(StringUtils.strip(strs.length>=7?strs[7]:null)))
@@ -496,6 +490,66 @@ public class AccInfoServiceImpl implements IAccInfoService {
     public void exporSubjectList(SubInfoReq req, HttpServletResponse response) throws Exception {
         exportSubjectXLSX(req,response);
     }
+
+    /**
+     * 添加科目匹配规则
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result addWxMatchRule(List<WxBillMatchSubjectRule> rules) {
+        SysUser user = HomeContextHolderStrategy.getUser();
+        rules.forEach(r->{
+            r.setUserId(user.getUserId());
+        });
+        wxBillMatchSubjectRuleMapper.delete(
+                Wrappers.lambdaQuery(WxBillMatchSubjectRule.class)
+                        .eq(WxBillMatchSubjectRule::getUserId,user.getUserId()));
+        wxBillMatchSubjectRuleMapper.insertBatch(rules);
+        return Result.success("设置成功！");
+    }
+
+    /**
+     * 查询科目匹配规则
+     */
+    @Override
+    public Result<WxBillMatchSubjectRule> getWxMatchRuleList() {
+        SysUser user = HomeContextHolderStrategy.getUser();
+        List list =  wxBillMatchSubjectRuleMapper.selectList(
+                Wrappers.lambdaQuery(WxBillMatchSubjectRule.class)
+                        .eq(WxBillMatchSubjectRule::getUserId,user.getUserId())
+        );
+        return Result.successList("查询成功！",list);
+    }
+
+    //快速匹配科目
+    @Override
+    public Result matchSubjectByRule(List<WxBill> wxBills) {
+        JSONArray arr = JSONArray.from(wxBills);
+        List<WxBillMatchSubjectRule> rules = getWxMatchRuleList().getList();
+        for (int i = 0; i < arr.size(); i++) {
+            JSONObject obj = arr.getJSONObject(i);
+            for (WxBillMatchSubjectRule rule : rules) {
+                if(obj.containsKey(rule.getWxDataItem())
+                        && Objects.equals(obj.get("subType"), rule.getSubType())){
+                    String matchType = rule.getMatchType();
+                    //包含
+                    if(Objects.equals(matchType,"1")
+                            && obj.getString(rule.getWxDataItem()).contains(rule.getMatchContent())){
+                        obj.put("subId",rule.getMatchSubId());
+                        break;
+                    }
+                    //等于
+                    if(Objects.equals(matchType,"2")
+                            && Objects.equals(obj.getString(rule.getWxDataItem()),rule.getMatchContent())){
+                        obj.put("subId",rule.getMatchSubId());
+                        break;
+                    }
+                }
+            }
+        }
+        return Result.successList("匹配成功！",arr.toList(WxBill.class));
+    }
+
 
     /**
      * 导出EXCEL
