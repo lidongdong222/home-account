@@ -16,4 +16,6 @@ create table wx_bill_match_subject_rule (
 
 ALTER TABLE home.wx_bill CHANGE acc_type sub_type varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '收支类型';
 ALTER TABLE home.wx_bill_match_subject_rule CHANGE acc_type sub_type varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '收支类型';
+ALTER TABLE home.wx_bill MODIFY COLUMN wx_status varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '当前状态';
+
 
